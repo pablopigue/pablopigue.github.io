@@ -113,7 +113,10 @@ h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.4rem)
 .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s,transform .2s,opacity .3s}
 .card:hover{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));transform:translateY(-3px)}
 .card.feature{grid-column:span 2}
-@media(max-width:760px){.card.feature{grid-column:auto}}
+.card{min-width:0}
+.card.tall{grid-row:span 3}
+.card.tall .stack{margin-top:0}
+@media(max-width:760px){.card.feature{grid-column:auto}.card.tall{grid-row:auto}}
 .card.hidden{display:none}
 .card-top{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}
 .media{margin:0 -4px;border-radius:10px;overflow:hidden;background:#000;position:relative}
@@ -121,11 +124,24 @@ h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.5vw,2.4rem)
 .media-43 video{aspect-ratio:4/3}
 .media-tall{background:#eef2ee;border:1px solid var(--line);margin:0}
 .media-tall video{aspect-ratio:830/946;object-fit:contain}
+.media-tall video.rag{aspect-ratio:746/946}
 .feat{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:start}
 .feat-text{display:flex;flex-direction:column;gap:12px}
 @media(max-width:860px){.feat{grid-template-columns:1fr}}
 .media figcaption{position:absolute;right:6px;bottom:6px;font-size:.62rem;color:#fff;background:rgba(0,0,0,.55);padding:2px 6px;border-radius:4px}
 .media figcaption a{color:#fff}
+.carousel{background:#fff;border:1px solid var(--line);margin:0}
+.car-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.car-track::-webkit-scrollbar{display:none}
+.car-slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;margin:0}
+.carousel .car-slide img{height:auto;aspect-ratio:2/1;object-fit:contain;background:#fff}
+.carousel .car-cap{position:static;background:none;border-radius:0;margin:0;padding:8px 12px 0;font-size:.68rem;color:#555;text-align:center}
+.car-nav{display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 8px 10px}
+.car-nav button{border:1px solid #ddd;background:#fff;color:#333;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:.95rem;line-height:1}
+.car-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.car-dots{display:flex;gap:6px}
+.car-dots button{width:7px;height:7px;padding:0;border:0;background:#ccc}
+.car-dots button[aria-current="true"]{background:var(--accent)}
 .card h3{font-family:var(--serif);font-weight:600;font-size:1.32rem;line-height:1.25}
 .card p{color:var(--muted);font-size:.95rem}
 .metrics{display:flex;flex-wrap:wrap;gap:8px}
@@ -282,8 +298,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
         <div class="card-links"><a class="demo" href="https://huggingface.co/spaces/Pablopigue/Facial_Emotion_Detection" target="_blank" rel="noopener"><span class="live"></span><span data-i18n="demo_photo">Live demo (photos)</span> ↗</a><a href="https://github.com/pablopigue/FacialRecognitionAndEmotionDetection" target="_blank" rel="noopener">code ↗</a><a href="https://huggingface.co/Pablopigue" target="_blank" rel="noopener">🤗 ↗</a></div>
       </article>
 
-      <article class="card reveal" data-tags="llm sw">
+      <article class="card tall reveal" id="rag" data-tags="llm sw">
         <div class="card-top mono"><span>2026</span><span>retrieval · agents · eval</span></div>
+        <figure class="media media-tall"><video class="rag" src="assets/rag-demo.mp4" poster="assets/rag-poster.jpg" muted loop playsinline preload="none" aria-label="Demo: a question about GANs answered with cited arXiv sources, then an out-of-corpus question the model abstains on"></video><figcaption class="mono" data-i18n="rt_typing">real time · only typing sped up</figcaption></figure>
         <h3 data-i18n="p3t">arXiv RAG - cited answers and a self-correcting agent</h3>
         <p data-i18n="p3d">Hybrid retrieval (dense bge + BM25 fused with reciprocal rank fusion, then a cross-encoder reranker) and a local LLM that answers only from cited sources, or abstains. A LangGraph corrective-RAG agent fetches and indexes new arXiv papers when the index can’t answer. Evaluated on 200 questions with 95% bootstrap confidence intervals; served via FastAPI, a streaming Streamlit UI and Docker Compose.</p>
         <div class="metrics"><span class="metric">Hit@5 <b>0.61 → 0.82</b></span><span class="metric">MRR <b>0.45 → 0.71</b></span><span class="metric">faithfulness <b>0.86</b></span><span class="metric"><b>200</b> Qs · 95% CI</span></div>
@@ -293,6 +310,17 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
       <article class="card reveal" data-tags="ml cv">
         <div class="card-top mono"><span>2021–2026 · <span data-i18n="thesis">Bachelor's thesis</span></span><span>generative</span></div>
+        <figure class="media carousel" aria-roledescription="carousel" aria-label="GAN results">
+          <div class="car-track" tabindex="0">
+            <figure class="car-slide"><img src="assets/gan-mnist.webp" width="1200" height="511" loading="lazy" alt="MNIST digits from six GAN variants with their best FID"><figcaption class="car-cap mono">MNIST · <span data-i18n="g_best">best-FID epoch per model</span></figcaption></figure>
+            <figure class="car-slide"><img src="assets/gan-fashion.webp" width="1200" height="511" loading="lazy" alt="Fashion-MNIST samples from six GAN variants with their best FID"><figcaption class="car-cap mono">Fashion-MNIST · <span data-i18n="g_best">best-FID epoch per model</span></figcaption></figure>
+            <figure class="car-slide"><img src="assets/gan-svhn.webp" width="1200" height="507" loading="lazy" alt="SVHN house numbers from six GAN variants with their best FID"><figcaption class="car-cap mono">SVHN · <span data-i18n="g_best">best-FID epoch per model</span></figcaption></figure>
+            <figure class="car-slide"><img src="assets/gan-celeba.webp" width="1200" height="490" loading="lazy" alt="CelebA faces generated by six GAN variants; DCGAN collapsed to noise, DCGAN+LS and WGAN-GP give the sharpest faces"><figcaption class="car-cap mono">CelebA · <span data-i18n="g_final">final epoch</span></figcaption></figure>
+            <figure class="car-slide"><img src="assets/cyclegan-ep1.webp" width="776" height="518" loading="lazy" alt="CycleGAN apple to orange after epoch 1: blurry, washed-out translations"><figcaption class="car-cap mono">CycleGAN · <span data-i18n="g_cyc1">epoch 1 · input → translated → reconstructed</span></figcaption></figure>
+            <figure class="car-slide"><img src="assets/cyclegan-ep200.webp" width="776" height="518" loading="lazy" alt="CycleGAN after epoch 200: the apple becomes an orange, the oranges become red apples, and both reconstruct cleanly"><figcaption class="car-cap mono">CycleGAN · <span data-i18n="g_cyc200">epoch 200 · input → translated → reconstructed</span></figcaption></figure>
+          </div>
+          <div class="car-nav"><button class="car-prev" aria-label="Previous">‹</button><div class="car-dots"></div><button class="car-next" aria-label="Next">›</button></div>
+        </figure>
         <h3 data-i18n="p4t">From f-divergences to practice: GANs</h3>
         <p data-i18n="p4d">Implemented and compared 7 GAN variants - vanilla GAN, DCGAN, DCGAN with label smoothing, WGAN, a convolutional WGAN, WGAN-GP and CycleGAN - on MNIST, Fashion-MNIST, SVHN, CelebA and apple2orange, evaluated with FID and IS over up to 10 runs each.</p>
         <div class="metrics"><span class="metric"><b>7</b> variants</span><span class="metric"><b>5</b> datasets</span><span class="metric">FID · IS</span></div>
@@ -399,7 +427,9 @@ const ES = {
   p1d:"Asistente por voz y texto que consulta el saldo, envía Bizums protegidos con PIN, responde sobre el historial con text-to-SQL de solo lectura y autocorrección, detecta suscripciones, proyecta el gasto de fin de mes con su propio margen de error y deja que el LLM elija tabla o gráfico para cada respuesta. Backend FastAPI + WebSocket con transferencias atómicas (una condición de carrera reproducida y cubierta por un test); el PIN nunca llega al modelo. 100% local sobre Qwen3-8B.",
   p2t:"sam2-lite - segmentación de vídeo eficiente",
   p2d:"Hice el tracking de vídeo de SAM 2.1 2,1× más rápido en CPU. Destilé el encoder de imagen en MobileNetV4 y, tras ver al perfilar que la atención de memoria se llevaba el 80% de cada frame, la destilé para atender a 3 frames de memoria en vez de 7. Cada número es trazable a un run de MLflow; se distribuye como app Gradio, servicio FastAPI e imagen Docker para CPU, con una CI que falla si cae el J&F.",
-  rt:"tiempo real · sin acelerar", demo:"Demo en vivo", demo_photo:"Demo en vivo (fotos)",
+  rt:"tiempo real · sin acelerar", rt_typing:"tiempo real · solo se acelera al escribir",
+  g_final:"época final", g_best:"época con mejor FID por modelo",
+  g_cyc1:"época 1 · entrada → traducida → reconstruida", g_cyc200:"época 200 · entrada → traducida → reconstruida", demo:"Demo en vivo", demo_photo:"Demo en vivo (fotos)",
   p3t:"arXiv RAG - respuestas citadas y un agente que se autocorrige",
   p3d:"Recuperación híbrida (bge denso + BM25 fusionados con reciprocal rank fusion y después un reranker cross-encoder) y un LLM local que solo responde a partir de fuentes citadas, o se abstiene. Un agente corrective-RAG con LangGraph busca e indexa nuevos papers de arXiv cuando el índice no basta. Evaluado sobre 200 preguntas con intervalos de confianza bootstrap al 95%; servido con FastAPI, una UI en Streamlit con streaming y Docker Compose.",
   p4t:"De las f-divergencias a la práctica: GANs",
@@ -454,6 +484,7 @@ document.getElementById('filters').addEventListener('click',e=>{
     c.classList.toggle('hidden',!show);
   });
   document.querySelector('.card').classList.toggle('feature', f==='all');
+  document.getElementById('rag').classList.toggle('tall', f==='all');
 });
 
 /* ---------- videos: play only while visible ---------- */
@@ -467,6 +498,18 @@ document.getElementById('filters').addEventListener('click',e=>{
   }),{threshold:.35});
   vids.forEach(v=>vio.observe(v));
 })();
+
+/* ---------- carousels ---------- */
+document.querySelectorAll('.carousel').forEach(c=>{
+  const track=c.querySelector('.car-track'), slides=[...track.children], dots=c.querySelector('.car-dots');
+  const go=i=>track.scrollTo({left:Math.max(0,Math.min(i,slides.length-1))*track.clientWidth});
+  const cur=()=>Math.round(track.scrollLeft/track.clientWidth);
+  slides.forEach((_,i)=>{const b=document.createElement('button');b.setAttribute('aria-label',(i+1)+' / '+slides.length);b.onclick=()=>go(i);dots.append(b)});
+  const sync=()=>[...dots.children].forEach((b,i)=>b.setAttribute('aria-current',i===cur()));
+  track.addEventListener('scroll',sync,{passive:true}); sync();
+  c.querySelector('.car-prev').onclick=()=>go(cur()-1);
+  c.querySelector('.car-next').onclick=()=>go(cur()+1);
+});
 
 /* ---------- reveal on scroll ---------- */
 const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}}),{threshold:.12});
